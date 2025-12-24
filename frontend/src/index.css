@@ -1,0 +1,133 @@
+:root {
+  /* Colors */
+  --primary: #8AB4F8;
+  /* Google Blue-ish / Nice Blue */
+  --primary-hover: #6ea1f7;
+  --accent: #F28B82;
+  /* Soft Red/Pink */
+  --bg-dark: #121212;
+  --bg-card: #1E1E1E;
+  --text-main: #FFFFFF;
+  --text-muted: #AAAAAA;
+  --border: #333333;
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 24px;
+  --radius-full: 9999px;
+
+  /* Font */
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  /* Dance Wallpaper */
+  background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url('/dance_wallpaper_v2.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+}
+
+/* Utilities */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Glassmorphism Card */
+.glass-card {
+  background: rgba(30, 30, 30, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  transition: all 0.2s;
+  font-size: 1rem;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: #000;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-main);
+}
+
+.btn-outline:hover {
+  border-color: var(--primary);
+}
+
+.input {
+  background: rgba(30, 30, 30, 0.6);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-main);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  width: 100%;
+  font-size: 1rem;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: rgba(30, 30, 30, 0.8);
+}
+
+/* Grid Layouts */
+.grid-teachers {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-lg);
+}
