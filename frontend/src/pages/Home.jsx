@@ -18,11 +18,11 @@ export default function Home() {
         <div className="container">
             <div style={{
                 textAlign: 'center',
-                padding: '80px 20px',
+                padding: '20px 20px',
                 maxWidth: '800px',
                 margin: '0 auto'
             }}>
-                <h1 style={{ fontSize: '3.5rem', marginBottom: 'var(--spacing-md)', lineHeight: 1.2 }}>
+                <h1 style={{ fontSize: '2.5rem', marginBottom: 'var(--spacing-md)', lineHeight: 1.2 }}>
                     Find the perfect <br />
                     <span style={{ color: 'var(--primary)' }}>Dance Teacher</span>
                 </h1>
@@ -32,7 +32,7 @@ export default function Home() {
                 </p>
 
                 <form onSubmit={handleSearch} style={{ position: 'relative', maxWidth: '500px', margin: '0 auto' }}>
-                    <SearchIcon style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', zIndex: 1 }} />
+                    <SearchIcon style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#B8860B', zIndex: 1 }} />
 
                     <div style={{ position: 'relative', width: '100%' }}>
                         <select
@@ -43,11 +43,12 @@ export default function Home() {
                                 borderRadius: 'var(--radius-full)',
                                 appearance: 'none',
                                 cursor: 'pointer',
-                                background: 'rgba(30, 30, 30, 0.6) url(\'data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E\') no-repeat right 24px center', // Custom arrow,
+                                background: 'rgba(30, 30, 30, 0.8) url(\'data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23B8860B%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E\') no-repeat right 24px center', // Custom arrow gold
                                 backgroundSize: '12px',
                                 backdropFilter: 'blur(4px)',
-                                border: '1px solid rgba(255, 255, 255, 0.2)',
-                                color: 'var(--text-main)'
+                                border: '2px solid #B8860B', // Dark Gold
+                                color: 'var(--text-main)',
+                                boxShadow: '0 4px 12px rgba(184, 134, 11, 0.3)'
                             }}
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
