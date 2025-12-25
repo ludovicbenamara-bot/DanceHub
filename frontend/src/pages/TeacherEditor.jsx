@@ -1,6 +1,8 @@
+```javascript
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 import { DANCE_STYLES } from '../constants/danceStyles';
 import { Save, Loader } from 'lucide-react';
 
@@ -8,21 +10,45 @@ export default function TeacherEditor() {
     const { user } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-
+    const [fetching, setFetching] = useState(true);
+    
     // Form State
     const [formData, setFormData] = useState({
         name: '',
         bio: '',
-        hourlyRate: 30,
+        hourly_rate: 30, // snake_case to match DB
         location: '',
         styles: [],
-        image: 'https://images.unsplash.com/photo-1541963463532-d68292c34b19?auto=format&fit=crop&q=80&w=600' // Default placeholder
+        image_url: 'https://images.unsplash.com/photo-1541963463532-d68292c34b19?auto=format&fit=crop&q=80&w=600'
     });
 
-    // Pre-fill if user data exists (Mock for now, will fetch from Supabase later)
+    // Fetch existing profile
     useEffect(() => {
-        if (user?.user_metadata?.full_name) {
-            setFormData(prev => ({ ...prev, name: user.user_metadata.full_name }));
+        if (user) {
+            const fetchProfile = async () => {
+                const { data, error } = await supabase
+                    .from('teachers')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+
+                if (data) {
+                    setFormData({
+                        name: data.name,
+                        bio: data.bio || '',
+                        hourly_rate: data.hourly_rate || 30,
+                        location: data.location || '',
+                        styles: data.styles || [],
+                        image_url: data.image_url || formData.image_url
+                    });
+                } else if (user.user_metadata?.full_name) {
+                    // Pre-fill from Auth if no profile yet
+                    setFormData(prev => ({ ...prev, name: user.user_metadata.full_name }));
+                }
+                setFetching(false);
+            };
+            
+            fetchProfile();
         }
     }, [user]);
 
@@ -46,16 +72,35 @@ export default function TeacherEditor() {
         e.preventDefault();
         setLoading(true);
 
-        // TODO: Save to Supabase 'teachers' table
-        console.log('Saving profile:', { userId: user.id, ...formData });
+        try {
+            const updates = {
+                id: user.id,
+                name: formData.name,
+                bio: formData.bio,
+                hourly_rate: parseFloat(formData.hourly_rate),
+                location: formData.location,
+                styles: formData.styles,
+                image_url: formData.image_url,
+                // updated_at: new Date() // handled by DB triggers usually, or ignore for now
+            };
 
-        // Simulate delay
-        setTimeout(() => {
-            setLoading(false);
-            alert('Profile Saved! (Logic connected in next step)');
+            const { error } = await supabase
+                .from('teachers')
+                .upsert(updates);
+
+            if (error) throw error;
+
+            alert('Profile Saved Successfully!');
             navigate('/dashboard');
-        }, 1000);
+        } catch (err) {
+            console.error('Error saving profile:', err);
+            alert('Error saving profile: ' + err.message);
+        } finally {
+            setLoading(false);
+        }
     };
+
+    if (fetching) return <div className="container flex-center" style={{height:'50vh'}}>Loading profile...</div>;
 
     return (
         <div className="container" style={{ paddingBottom: '80px' }}>
@@ -74,7 +119,7 @@ export default function TeacherEditor() {
                         </div>
                         <div>
                             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Hourly Rate (€)</label>
-                            <input name="hourlyRate" type="number" value={formData.hourlyRate} onChange={handleChange} className="input" required />
+                            <input name="hourly_rate" type="number" value={formData.hourly_rate} onChange={handleChange} className="input" required />
                         </div>
                     </div>
 
