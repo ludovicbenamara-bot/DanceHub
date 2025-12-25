@@ -7,7 +7,6 @@ import { Clock, MapPin } from 'lucide-react';
 export default function Dashboard() {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [fetchError, setFetchError] = useState(null); // Debug state
     const { user, signOut } = useAuth();
     const navigate = useNavigate();
 
@@ -34,20 +33,6 @@ export default function Dashboard() {
                 setBookings(data || []);
             } catch (err) {
                 console.error('Error fetching bookings:', err);
-                setFetchError(err.message);
-
-                // FALLBACK: Try fetching without the Join (maybe FK is missing?)
-                if (err.message) {
-                    try {
-                        const { data: simpleData } = await supabase.from('bookings').select('*').eq('student_id', user.id);
-                        if (simpleData && simpleData.length > 0) {
-                            setBookings(simpleData); // Show simple data at least
-                            setFetchError('Partial Data Loaded (Teacher details missing)');
-                        }
-                    } catch (fallbackErr) {
-                        console.error('Fallback failed:', fallbackErr);
-                    }
-                }
             } finally {
                 setLoading(false);
             }
