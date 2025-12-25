@@ -1,13 +1,15 @@
+```javascript
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { MapPin, Star, Clock } from 'lucide-react';
+import { useSearchParams, Link } from 'react-router-dom';
+import { Search as SearchIcon, MapPin, Star, Filter } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import { DANCE_STYLES } from '../constants/danceStyles';
 
-const API_URL = 'http://localhost:3001/api';
 
 export default function Search() {
     const [searchParams] = useSearchParams();
-    const q = searchParams.get('q');
-    const style = searchParams.get('style');
+    const query = searchParams.get('q') || '';
+    const styleQuery = searchParams.get('style');
     const [teachers, setTeachers] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -15,27 +17,36 @@ export default function Search() {
         const fetchTeachers = async () => {
             setLoading(true);
             try {
-                let url = `${API_URL}/teachers?`;
-                if (q) url += `query=${q}&`;
-                if (style) url += `style=${style}&`;
+                let dbQuery = supabase.from('teachers').select('*');
 
-                const res = await fetch(url);
-                const data = await res.json();
-                setTeachers(data);
+                // Filter by text (Name or Bio)
+                if (query) {
+                    dbQuery = dbQuery.or(`name.ilike.% ${ query }%, bio.ilike.% ${ query }% `);
+                }
+
+                // Filter by Style (Array contains)
+                if (styleQuery) {
+                    dbQuery = dbQuery.contains('styles', [styleQuery]);
+                }
+
+                const { data, error } = await dbQuery;
+                
+                if (error) throw error;
+                setTeachers(data || []);
             } catch (err) {
-                console.error("Failed to fetch", err);
+                console.error('Error fetching teachers:', err);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchTeachers();
-    }, [q, style]);
+    }, [query, styleQuery]);
 
     return (
         <div className="container" style={{ paddingBottom: '40px' }}>
             <h2 style={{ marginBottom: 'var(--spacing-lg)' }}>
-                {style ? `${style} Teachers` : 'Find your teacher'}
+                {styleQuery ? `${ styleQuery } Teachers` : 'Find your teacher'}
             </h2>
 
             {loading ? (
@@ -50,19 +61,19 @@ export default function Search() {
                             border: '1px solid var(--border)'
                         }}>
                             <div style={{ height: '200px', overflow: 'hidden' }}>
-                                <img src={teacher.image} alt={teacher.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                <img src={teacher.image_url || 'https://via.placeholder.com/300'} alt={teacher.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             </div>
                             <div style={{ padding: 'var(--spacing-md)' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                                     <h3 style={{ fontSize: '1.25rem' }}>{teacher.name}</h3>
                                     <div className="flex-center" style={{ color: '#FFD700', gap: '4px' }}>
                                         <Star size={16} fill="#FFD700" />
-                                        <span>{teacher.rating}</span>
+                                        <span>{teacher.rating || 'New'}</span>
                                     </div>
                                 </div>
 
                                 <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '12px' }}>
-                                    {teacher.styles.join(', ')}
+                                    {teacher.styles ? teacher.styles.join(', ') : ''}
                                 </p>
 
                                 <div className="flex-center" style={{ justifyContent: 'flex-start', gap: 'var(--spacing-sm)', color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '16px' }}>
@@ -71,10 +82,10 @@ export default function Search() {
                                 </div>
 
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
-                                    <span style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>€{teacher.hourlyRate}/h</span>
-                                    <a href={`/teacher/${teacher.id}`} className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '0.9rem', textDecoration: 'none' }}>
+                                    <span style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>€{teacher.hourly_rate}/h</span>
+                                    <Link to={`/ teacher / ${ teacher.id } `} className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '0.9rem', textDecoration: 'none' }}>
                                         View Profile
-                                    </a>
+                                    </Link>
                                 </div>
                             </div>
                         </div>
