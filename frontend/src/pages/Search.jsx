@@ -1,4 +1,3 @@
-```javascript
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Search as SearchIcon, MapPin, Star, Filter } from 'lucide-react';
@@ -21,7 +20,7 @@ export default function Search() {
 
                 // Filter by text (Name or Bio)
                 if (query) {
-                    dbQuery = dbQuery.or(`name.ilike.% ${ query }%, bio.ilike.% ${ query }% `);
+                    dbQuery = dbQuery.or(`name.ilike.%${query}%,bio.ilike.%${query}%`);
                 }
 
                 // Filter by Style (Array contains)
@@ -29,8 +28,8 @@ export default function Search() {
                     dbQuery = dbQuery.contains('styles', [styleQuery]);
                 }
 
-                const { data, error } = await dbQuery;
-                
+                const { data, error } = dbQuery;
+
                 if (error) throw error;
                 setTeachers(data || []);
             } catch (err) {
@@ -46,7 +45,7 @@ export default function Search() {
     return (
         <div className="container" style={{ paddingBottom: '40px' }}>
             <h2 style={{ marginBottom: 'var(--spacing-lg)' }}>
-                {styleQuery ? `${ styleQuery } Teachers` : 'Find your teacher'}
+                {styleQuery ? `${styleQuery} Teachers` : 'Find your teacher'}
             </h2>
 
             {loading ? (
@@ -83,7 +82,7 @@ export default function Search() {
 
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
                                     <span style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>€{teacher.hourly_rate}/h</span>
-                                    <Link to={`/ teacher / ${ teacher.id } `} className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '0.9rem', textDecoration: 'none' }}>
+                                    <Link to={`/teacher/${teacher.id}`} className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '0.9rem', textDecoration: 'none' }}>
                                         View Profile
                                     </Link>
                                 </div>

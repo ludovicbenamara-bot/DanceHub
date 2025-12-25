@@ -1,4 +1,4 @@
-```javascript
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +11,7 @@ export default function TeacherEditor() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(true);
-    
+
     // Form State
     const [formData, setFormData] = useState({
         name: '',
@@ -47,7 +47,7 @@ export default function TeacherEditor() {
                 }
                 setFetching(false);
             };
-            
+
             fetchProfile();
         }
     }, [user]);
@@ -100,7 +100,7 @@ export default function TeacherEditor() {
         }
     };
 
-    if (fetching) return <div className="container flex-center" style={{height:'50vh'}}>Loading profile...</div>;
+    if (fetching) return <div className="container flex-center" style={{ height: '50vh' }}>Loading profile...</div>;
 
     return (
         <div className="container" style={{ paddingBottom: '80px' }}>
