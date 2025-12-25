@@ -1,8 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, User } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
+    const { user } = useAuth();
+
     return (
         <nav style={{
             padding: 'var(--spacing-md) 0',
@@ -16,10 +19,22 @@ export default function Navbar() {
 
                 <div className="flex-center" style={{ gap: 'var(--spacing-md)' }}>
                     <Link to="/search" style={{ color: 'var(--text-muted)' }}>Find a Teacher</Link>
-                    <Link to="/login" className="btn btn-outline flex-center" style={{ gap: 'var(--spacing-sm)', padding: '8px 16px' }}>
-                        <User size={18} />
-                        <span>Login</span>
-                    </Link>
+
+                    {user && (
+                        <Link to="/dashboard" style={{ color: 'var(--primary)', fontWeight: 'bold' }}>Dashboard</Link>
+                    )}
+
+                    {!user ? (
+                        <Link to="/login" className="btn btn-outline flex-center" style={{ gap: 'var(--spacing-sm)', padding: '8px 16px' }}>
+                            <User size={18} />
+                            <span>Login</span>
+                        </Link>
+                    ) : (
+                        <Link to="/dashboard" className="btn btn-outline flex-center" style={{ gap: 'var(--spacing-sm)', padding: '8px 16px' }}>
+                            <User size={18} />
+                            <span>{user.email?.split('@')[0]}</span>
+                        </Link>
+                    )}
                 </div>
             </div>
         </nav>
