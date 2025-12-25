@@ -7,6 +7,7 @@ import { Clock, MapPin } from 'lucide-react';
 export default function Dashboard() {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [fetchError, setFetchError] = useState(null);
     const { user, signOut } = useAuth();
     const navigate = useNavigate();
 
@@ -33,6 +34,7 @@ export default function Dashboard() {
                 setBookings(data || []);
             } catch (err) {
                 console.error('Error fetching bookings:', err);
+                setFetchError(err.message);
             } finally {
                 setLoading(false);
             }
