@@ -140,8 +140,6 @@ export default function Dashboard() {
                                                     {teacherName ? `Lesson with ${teacherName}` : 'Dance Lesson'}
                                                 </h3>
 
-
-
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
                                                     <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                         <Calendar size={14} /> {booking.date}
@@ -156,14 +154,40 @@ export default function Dashboard() {
                                             </div>
                                         </div>
 
-                                        <div style={{
-                                            padding: '6px 12px',
-                                            borderRadius: '20px',
-                                            fontSize: '0.8rem',
-                                            background: booking.status === 'confirmed' ? 'rgba(76, 175, 80, 0.2)' : 'rgba(255, 193, 7, 0.2)',
-                                            color: booking.status === 'confirmed' ? '#81c784' : '#ffd54f'
-                                        }}>
-                                            {booking.status.toUpperCase()}
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                            <div style={{
+                                                padding: '6px 12px',
+                                                borderRadius: '20px',
+                                                fontSize: '0.8rem',
+                                                background: booking.status === 'confirmed' ? 'rgba(76, 175, 80, 0.2)' : 'rgba(255, 193, 7, 0.2)',
+                                                color: booking.status === 'confirmed' ? '#81c784' : '#ffd54f'
+                                            }}>
+                                                {booking.status.toUpperCase()}
+                                            </div>
+
+                                            {/* Cancel Button */}
+                                            <button
+                                                onClick={async () => {
+                                                    if (!window.confirm('Are you sure you want to cancel this lesson?')) return;
+
+                                                    // Optimistic UI update
+                                                    const originalBookings = [...bookings];
+                                                    setBookings(bookings.filter(b => b.id !== booking.id));
+
+                                                    const { error } = await supabase.from('bookings').delete().eq('id', booking.id);
+
+                                                    if (error) {
+                                                        console.error('Error cancelling:', error);
+                                                        alert('Failed to cancel: ' + error.message);
+                                                        setBookings(originalBookings); // Revert on error
+                                                    }
+                                                }}
+                                                className="btn btn-outline"
+                                                style={{ padding: '8px', color: '#ff4444', borderColor: 'rgba(255, 68, 68, 0.3)' }}
+                                                title="Cancel Booking"
+                                            >
+                                                🗑️
+                                            </button>
                                         </div>
                                     </div>
                                 )
