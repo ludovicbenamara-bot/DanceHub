@@ -151,6 +151,7 @@ export default function Dashboard() {
                 <h3>🕵️‍♂️ Super Debugger</h3>
                 <p><strong>User ID:</strong> {user?.id}</p>
                 <p><strong>Fetch Error:</strong> {fetchError ? fetchError : 'None'}</p>
+                <p><strong>API Key Prefix:</strong> {supabase.supabaseKey ? supabase.supabaseKey.substring(0, 10) + '...' : 'UNDEFINED'}</p>
                 <p><strong>Bookings Length:</strong> {bookings.length}</p>
                 <details>
                     <summary>Raw Data (Click to expand)</summary>
