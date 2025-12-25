@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const API_URL = 'http://localhost:3001/api';
 
 export default function Dashboard() {
     const [bookings, setBookings] = useState([]);
+    const { user, signOut } = useAuth();
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetch(`${API_URL}/my-bookings`)
@@ -14,10 +18,28 @@ export default function Dashboard() {
 
     return (
         <div className="container">
-            <h2 style={{ marginBottom: '24px' }}>My Dashboard</h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                <h2>My Dashboard</h2>
+                {user && (
+                    <button onClick={() => { signOut(); navigate('/'); }} className="btn btn-outline" style={{ fontSize: '0.9rem' }}>
+                        Logout ({user.email})
+                    </button>
+                )}
+            </div>
 
-            <div style={{ display: 'grid', gap: '24px', gridTemplateColumns: '1fr' }}>
-                <section>
+            <div style={{ display: 'grid', gap: '24px', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
+                {/* Helper Card for Teachers */}
+                <div className="glass-card" style={{ padding: '24px', borderRadius: 'var(--radius-md)', borderLeft: '4px solid var(--primary)' }}>
+                    <h3 style={{ marginBottom: '12px' }}>Teacher Profile</h3>
+                    <p style={{ color: 'var(--text-muted)', marginBottom: '16px' }}>
+                        Want to teach? Create your profile to be listed in the search.
+                    </p>
+                    <button onClick={() => navigate('/teacher/edit')} className="btn btn-primary" style={{ width: '100%' }}>
+                        Edit / Create Profile
+                    </button>
+                </div>
+
+                <section style={{ gridColumn: '1 / -1' }}>
                     <h3 style={{ marginBottom: '16px', color: 'var(--text-muted)' }}>Upcoming Lessons</h3>
 
                     {bookings.length === 0 ? (

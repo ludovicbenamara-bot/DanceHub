@@ -16,7 +16,7 @@ export default function Navbar() {
 
                 <div className="flex-center" style={{ gap: 'var(--spacing-md)' }}>
                     <Link to="/search" style={{ color: 'var(--text-muted)' }}>Find a Teacher</Link>
-                    <Link to="/dashboard" className="btn btn-outline flex-center" style={{ gap: 'var(--spacing-sm)', padding: '8px 16px' }}>
+                    <Link to="/login" className="btn btn-outline flex-center" style={{ gap: 'var(--spacing-sm)', padding: '8px 16px' }}>
                         <User size={18} />
                         <span>Login</span>
                     </Link>
