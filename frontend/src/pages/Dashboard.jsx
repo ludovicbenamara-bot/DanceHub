@@ -1,8 +1,9 @@
+
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { Clock, MapPin } from 'lucide-react';
+import { Clock, MapPin, Calendar, AlertTriangle } from 'lucide-react';
 
 export default function Dashboard() {
     const [bookings, setBookings] = useState([]);
@@ -93,56 +94,86 @@ export default function Dashboard() {
                         Your Bookings
                     </h2>
 
-                    {bookings.length === 0 ? (
+                    {fetchError && (
+                        <div style={{ padding: '15px', background: 'rgba(255, 0, 0, 0.2)', border: '1px solid #ff4444', color: '#ffcccc', marginBottom: '20px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <AlertTriangle size={20} />
+                            <div>
+                                <strong>Error loading bookings:</strong> {fetchError}
+                            </div>
+                        </div>
+                    )}
+
+                    {bookings.length === 0 && !fetchError ? (
                         <div className="glass-card" style={{ padding: '40px', textAlign: 'center', borderRadius: 'var(--radius-md)' }}>
                             <p style={{ color: 'var(--text-muted)', marginBottom: '16px' }}>You have no upcoming lessons.</p>
                             <button onClick={() => navigate('/search')} className="btn btn-primary">Book your first lesson</button>
                         </div>
                     ) : (
                         <div style={{ display: 'grid', gap: '16px' }}>
-                            {bookings.map(booking => (
-                                <div key={booking.id} className="glass-card" style={{
-                                    padding: '20px',
-                                    borderRadius: 'var(--radius-md)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                    flexWrap: 'wrap',
-                                    gap: '16px'
-                                }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                                        <div style={{
-                                            width: '50px', height: '50px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)',
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'
-                                        }}>
-                                            {new Date(booking.date).getDate()}
-                                        </div>
-                                        <div>
-                                            <h4 style={{ fontSize: '1.1rem', marginBottom: '4px' }}>
-                                                {booking.teachers?.name ? `Lesson with ${booking.teachers.name}` : 'Dance Lesson'}
-                                            </h4>
-                                            <div style={{ display: 'flex', gap: '12px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                                                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                    <Clock size={14} /> {booking.time}
-                                                </span>
-                                                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                    <MapPin size={14} /> {booking.teachers?.location || 'Online'}
-                                                </span>
+                            {bookings.map(booking => {
+                                // HELPER: Extract teacher info safely whether it's an array or object
+                                const teacherData = Array.isArray(booking.teachers) ? booking.teachers[0] : booking.teachers;
+                                const teacherName = teacherData?.name;
+                                const teacherImg = teacherData?.image_url;
+                                const teacherLoc = teacherData?.location;
+
+                                return (
+                                    <div key={booking.id} className="glass-card" style={{
+                                        padding: '20px',
+                                        borderRadius: 'var(--radius-md)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        flexWrap: 'wrap',
+                                        gap: '16px'
+                                    }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                            <div style={{
+                                                width: '60px', height: '60px', borderRadius: '50%', background: '#333',
+                                                backgroundImage: teacherImg ? `url(${teacherImg})` : 'none',
+                                                backgroundSize: 'cover', backgroundPosition: 'center',
+                                                display: !teacherImg ? 'flex' : 'block', alignItems: 'center', justifyContent: 'center'
+                                            }}>
+                                                {!teacherImg && <span style={{ fontSize: '20px' }}>🕺</span>}
+                                            </div>
+                                            <div>
+                                                <h3 style={{ margin: 0, fontSize: '1.2rem' }}>
+                                                    {teacherName ? `Lesson with ${teacherName}` : 'Dance Lesson'}
+                                                </h3>
+
+                                                {/* VISUAL DEBUG: Force user to see what data came back */}
+                                                {!teacherName && (
+                                                    <code style={{ display: 'block', fontSize: '11px', color: '#ff4444', marginTop: '4px', background: 'rgba(0,0,0,0.3)', padding: '4px', borderRadius: '4px' }}>
+                                                        MISSING TEACHER DATA. Raw: {JSON.stringify(booking.teachers)}
+                                                    </code>
+                                                )}
+
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                                                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                        <Calendar size={14} /> {booking.date}
+                                                    </span>
+                                                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                        <Clock size={14} /> {booking.time}
+                                                    </span>
+                                                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                        <MapPin size={14} /> {teacherLoc || 'Location TBD'}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <div style={{
-                                        padding: '6px 12px',
-                                        borderRadius: '20px',
-                                        fontSize: '0.8rem',
-                                        background: booking.status === 'confirmed' ? 'rgba(76, 175, 80, 0.2)' : 'rgba(255, 193, 7, 0.2)',
-                                        color: booking.status === 'confirmed' ? '#81c784' : '#ffd54f'
-                                    }}>
-                                        {booking.status.toUpperCase()}
+                                        <div style={{
+                                            padding: '6px 12px',
+                                            borderRadius: '20px',
+                                            fontSize: '0.8rem',
+                                            background: booking.status === 'confirmed' ? 'rgba(76, 175, 80, 0.2)' : 'rgba(255, 193, 7, 0.2)',
+                                            color: booking.status === 'confirmed' ? '#81c784' : '#ffd54f'
+                                        }}>
+                                            {booking.status.toUpperCase()}
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                )
+                            })}
                         </div>
                     )}
                 </div>
