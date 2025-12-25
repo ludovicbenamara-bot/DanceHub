@@ -1,18 +1,12 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-// Access environment variables (Vite uses import.meta.env.VITE_...)
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// Access environment variables, or fallback to hardcoded valid keys for local dev
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://tmpotndntmzhouirlvsh.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_7SmvfXDPJy6BCsSsFhasIA_8nwV99bW';
 
-// Warn if keys are missing (dev friendly)
-if (!supabaseUrl || !supabaseAnonKey) {
-    console.error('Missing Supabase Environment Variables!');
-    console.log('VITE_SUPABASE_URL:', supabaseUrl);
-    console.warn('⚠️ Supabase URL or Anon Key is missing. Check your .env file.');
+if (!import.meta.env.VITE_SUPABASE_URL) {
+    console.warn('⚠️ Supabase Env Vars missing. Using hardcoded fallback for local dev.');
 }
 
-export const supabase = createClient(
-    supabaseUrl || 'https://placeholder.supabase.co',
-    supabaseAnonKey || 'placeholder'
-);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
