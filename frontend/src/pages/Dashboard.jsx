@@ -32,7 +32,6 @@ export default function Dashboard() {
                     .order('date', { ascending: true });
 
                 if (error) throw error;
-                console.log('Bookings loaded:', data); // DEBUG
                 setBookings(data || []);
             } catch (err) {
                 console.error('Error fetching bookings:', err);
@@ -141,12 +140,7 @@ export default function Dashboard() {
                                                     {teacherName ? `Lesson with ${teacherName}` : 'Dance Lesson'}
                                                 </h3>
 
-                                                {/* VISUAL DEBUG: Force user to see what data came back */}
-                                                {!teacherName && (
-                                                    <code style={{ display: 'block', fontSize: '11px', color: '#ff4444', marginTop: '4px', background: 'rgba(0,0,0,0.3)', padding: '4px', borderRadius: '4px' }}>
-                                                        MISSING TEACHER DATA. Raw: {JSON.stringify(booking.teachers)}
-                                                    </code>
-                                                )}
+
 
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
                                                     <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
