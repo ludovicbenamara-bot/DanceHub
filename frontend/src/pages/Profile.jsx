@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { MapPin, Star, Clock, Calendar, CheckCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import BookingModal from '../components/BookingModal'; // Assuming this exists or we need to update it too
+
 
 export default function Profile() {
     const { id } = useParams();

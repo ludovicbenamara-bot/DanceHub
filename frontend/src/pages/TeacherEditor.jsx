@@ -100,6 +100,39 @@ export default function TeacherEditor() {
         }
     };
 
+    const [uploading, setUploading] = useState(false);
+
+    const handleImageUpload = async (event) => {
+        try {
+            setUploading(true);
+            if (!event.target.files || event.target.files.length === 0) {
+                throw new Error('You must select an image to upload.');
+            }
+
+            const file = event.target.files[0];
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${user.id}-${Math.random()}.${fileExt}`;
+            const filePath = `${fileName}`;
+
+            let { error: uploadError } = await supabase.storage
+                .from('avatars')
+                .upload(filePath, file);
+
+            if (uploadError) {
+                throw uploadError;
+            }
+
+            const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
+
+            setFormData(prev => ({ ...prev, image_url: data.publicUrl }));
+            alert('Image uploaded successfully!');
+        } catch (error) {
+            alert('Error uploading image: ' + error.message);
+        } finally {
+            setUploading(false);
+        }
+    };
+
     if (fetching) return <div className="container flex-center" style={{ height: '50vh' }}>Loading profile...</div>;
 
     return (
@@ -110,6 +143,46 @@ export default function TeacherEditor() {
                 </h2>
 
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+
+                    {/* Image Upload */}
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '16px' }}>
+                        <div style={{
+                            width: '150px',
+                            height: '150px',
+                            borderRadius: '50%',
+                            overflow: 'hidden',
+                            marginBottom: '16px',
+                            border: '4px solid var(--primary)',
+                            background: 'rgba(0,0,0,0.3)'
+                        }}>
+                            <img
+                                src={formData.image_url}
+                                alt="Profile"
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            />
+                        </div>
+                        <div style={{ position: 'relative', overflow: 'hidden', display: 'inline-block' }}>
+                            <button type="button" className="btn btn-outline" disabled={uploading} style={{ pointerEvents: 'none' }}>
+                                {uploading ? 'Uploading...' : 'Change Photo'}
+                            </button>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageUpload}
+                                disabled={uploading}
+                                style={{
+                                    position: 'absolute',
+                                    left: 0,
+                                    top: 0,
+                                    opacity: 0,
+                                    width: '100%',
+                                    height: '100%',
+                                    cursor: 'pointer',
+                                    pointerEvents: 'all'
+                                }}
+                            />
+                        </div>
+                    </div>
 
                     {/* Basic Info */}
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>

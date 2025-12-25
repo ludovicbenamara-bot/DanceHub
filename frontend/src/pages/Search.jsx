@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { Search as SearchIcon, MapPin, Star, Filter } from 'lucide-react';
+import { MapPin, Star } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { DANCE_STYLES } from '../constants/danceStyles';
-
 
 export default function Search() {
     const [searchParams] = useSearchParams();
@@ -28,7 +26,8 @@ export default function Search() {
                     dbQuery = dbQuery.contains('styles', [styleQuery]);
                 }
 
-                const { data, error } = dbQuery;
+                // CRITICAL FIX: await the query result!
+                const { data, error } = await dbQuery;
 
                 if (error) throw error;
                 setTeachers(data || []);
@@ -50,6 +49,16 @@ export default function Search() {
 
             {loading ? (
                 <p>Loading...</p>
+            ) : teachers.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '40px', background: 'rgba(255,255,255,0.05)', borderRadius: 'var(--radius-lg)' }}>
+                    <h3 style={{ marginBottom: '16px' }}>No teachers found</h3>
+                    <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>
+                        We couldn't find any teachers matching your criteria. Try adjusting your search or view all teachers.
+                    </p>
+                    <Link to="/search" className="btn btn-outline">
+                        Show All Teachers
+                    </Link>
+                </div>
             ) : (
                 <div className="grid-teachers">
                     {teachers.map(teacher => (

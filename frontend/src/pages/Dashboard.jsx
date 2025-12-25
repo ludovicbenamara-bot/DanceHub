@@ -29,6 +29,16 @@ export default function Dashboard() {
 
             <div style={{ display: 'grid', gap: '24px', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
                 {/* Helper Card for Teachers */}
+                <div className="glass-card" style={{ padding: '24px', borderRadius: 'var(--radius-md)', borderLeft: '4px solid #fff' }}>
+                    <h3 style={{ marginBottom: '12px' }}>Find a Lesson</h3>
+                    <p style={{ color: 'var(--text-muted)', marginBottom: '16px' }}>
+                        Browse our community of teachers and find your perfect match.
+                    </p>
+                    <button onClick={() => navigate('/search')} className="btn btn-outline" style={{ width: '100%' }}>
+                        Search Teachers
+                    </button>
+                </div>
+
                 <div className="glass-card" style={{ padding: '24px', borderRadius: 'var(--radius-md)', borderLeft: '4px solid var(--primary)' }}>
                     <h3 style={{ marginBottom: '12px' }}>Teacher Profile</h3>
                     <p style={{ color: 'var(--text-muted)', marginBottom: '16px' }}>
