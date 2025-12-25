@@ -31,6 +31,7 @@ export default function Dashboard() {
                     .order('date', { ascending: true });
 
                 if (error) throw error;
+                console.log('Bookings loaded:', data); // DEBUG
                 setBookings(data || []);
             } catch (err) {
                 console.error('Error fetching bookings:', err);
