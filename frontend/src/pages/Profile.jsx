@@ -1,14 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { MapPin, Star, Clock, Calendar, CheckCircle } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { MapPin, Star, CheckCircle, Calendar, Clock } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-
+import { useAuth } from '../context/AuthContext';
 
 export default function Profile() {
     const { id } = useParams();
+    const navigate = useNavigate();
+    const { user } = useAuth(); // Get current user for booking
     const [teacher, setTeacher] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    // Booking State
     const [showBooking, setShowBooking] = useState(false);
+    const [selectedDate, setSelectedDate] = useState('');
+    const [selectedTime, setSelectedTime] = useState('');
+    const [bookingStatus, setBookingStatus] = useState('idle'); // idle, submitting, success, error
 
     useEffect(() => {
         const fetchTeacher = async () => {
@@ -32,8 +39,54 @@ export default function Profile() {
         if (id) fetchTeacher();
     }, [id]);
 
+    const handleBookLesson = async () => {
+        if (!user) {
+            alert('You must be logged in to book a lesson.');
+            navigate('/login');
+            return;
+        }
+        if (!selectedDate || !selectedTime) {
+            alert('Please select a date and time.');
+            return;
+        }
+
+        setBookingStatus('submitting');
+        try {
+            const { error } = await supabase
+                .from('bookings')
+                .insert([
+                    {
+                        teacher_id: teacher.id,
+                        student_id: user.id,
+                        date: selectedDate,
+                        time: selectedTime,
+                        status: 'confirmed'
+                    }
+                ]);
+
+            if (error) throw error;
+
+            setBookingStatus('success');
+            setTimeout(() => {
+                setShowBooking(false);
+                setBookingStatus('idle');
+                setSelectedDate('');
+                setSelectedTime('');
+                alert('Booking confirmed! Check your dashboard.');
+            }, 1000);
+
+        } catch (err) {
+            console.error('Booking error:', err);
+            setBookingStatus('error');
+            alert('Failed to book: ' + err.message);
+        }
+    };
+
     if (loading) return <div className="container flex-center" style={{ height: '50vh' }}>Loading...</div>;
     if (!teacher) return <div className="container flex-center" style={{ height: '50vh' }}>Teacher not found.</div>;
+
+    // Generate simple time slots
+    const timeSlots = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
 
     return (
         <div className="container" style={{ paddingBottom: '80px' }}>
@@ -125,7 +178,7 @@ export default function Profile() {
                 </div>
             </div>
 
-            {/* Booking Modal (Mock for now) */}
+            {/* REAL Booking Modal */}
             {showBooking && (
                 <div style={{
                     position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 1000,
@@ -138,11 +191,58 @@ export default function Profile() {
                         >
                             ×
                         </button>
-                        <h2 style={{ marginBottom: '24px' }}>Book a Lesson</h2>
-                        <p>Booking functionality coming in the next update (Epic 4)!</p>
-                        <button onClick={() => setShowBooking(false)} className="btn btn-outline" style={{ marginTop: '24px', width: '100%' }}>
-                            Close
-                        </button>
+                        <h2 style={{ marginBottom: '24px' }}>Select a Date</h2>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                            {/* Date Picker */}
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Date</label>
+                                <div style={{ position: 'relative' }}>
+                                    <Calendar size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                                    <input
+                                        type="date"
+                                        className="input"
+                                        style={{ paddingLeft: '40px' }}
+                                        value={selectedDate}
+                                        onChange={(e) => setSelectedDate(e.target.value)}
+                                        min={new Date().toISOString().split('T')[0]}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Time Slots */}
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Time Slot</label>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
+                                    {timeSlots.map(slot => (
+                                        <button
+                                            key={slot}
+                                            onClick={() => setSelectedTime(slot)}
+                                            style={{
+                                                padding: '10px',
+                                                borderRadius: '8px',
+                                                border: selectedTime === slot ? '2px solid var(--primary)' : '1px solid var(--border)',
+                                                background: selectedTime === slot ? 'rgba(255, 68, 107, 0.2)' : 'rgba(255,255,255,0.05)',
+                                                color: '#fff',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            {slot}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Submit Button */}
+                            <button
+                                onClick={handleBookLesson}
+                                className="btn btn-primary"
+                                style={{ marginTop: '10px', width: '100%', position: 'relative' }}
+                                disabled={bookingStatus === 'submitting'}
+                            >
+                                {bookingStatus === 'submitting' ? 'Confirming...' : 'Confirm Booking'}
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
