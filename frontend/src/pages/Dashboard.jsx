@@ -146,6 +146,17 @@ export default function Dashboard() {
                     )}
                 </div>
             </div>
+            {/* RAW DEBUGGER - TO BE REMOVED */}
+            <div style={{ marginTop: '50px', padding: '20px', background: '#000', color: '#0f0', border: '1px solid #0f0', borderRadius: '8px', overflow: 'auto' }}>
+                <h3>🕵️‍♂️ Super Debugger</h3>
+                <p><strong>User ID:</strong> {user?.id}</p>
+                <p><strong>Fetch Error:</strong> {fetchError ? fetchError : 'None'}</p>
+                <p><strong>Bookings Length:</strong> {bookings.length}</p>
+                <details>
+                    <summary>Raw Data (Click to expand)</summary>
+                    <pre>{JSON.stringify(bookings, null, 2)}</pre>
+                </details>
+            </div>
         </div>
     );
 }
