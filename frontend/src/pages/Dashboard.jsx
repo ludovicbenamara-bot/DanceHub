@@ -22,7 +22,7 @@ export default function Dashboard() {
                     .from('bookings')
                     .select(`
                         *,
-                        teachers (
+                        teachers!bookings_teacher_id_fkey (
                             name,
                             image_url,
                             location
