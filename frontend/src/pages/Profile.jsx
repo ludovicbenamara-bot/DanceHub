@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { MapPin, Star, CheckCircle, Calendar, Clock } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import BookingModal from '../components/BookingModal';
 
 export default function Profile() {
     const { id } = useParams();
@@ -178,73 +179,18 @@ export default function Profile() {
                 </div>
             </div>
 
-            {/* REAL Booking Modal */}
-            {showBooking && (
-                <div style={{
-                    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 1000,
-                    display: 'flex', justifyContent: 'center', alignItems: 'center'
-                }}>
-                    <div className="glass-card" style={{ padding: '40px', width: '100%', maxWidth: '500px', borderRadius: 'var(--radius-lg)', position: 'relative' }}>
-                        <button
-                            onClick={() => setShowBooking(false)}
-                            style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', color: '#fff', fontSize: '1.5rem', cursor: 'pointer' }}
-                        >
-                            ×
-                        </button>
-                        <h2 style={{ marginBottom: '24px' }}>Select a Date</h2>
-
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                            {/* Date Picker */}
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Date</label>
-                                <div style={{ position: 'relative' }}>
-                                    <Calendar size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-                                    <input
-                                        type="date"
-                                        className="input"
-                                        style={{ paddingLeft: '40px' }}
-                                        value={selectedDate}
-                                        onChange={(e) => setSelectedDate(e.target.value)}
-                                        min={new Date().toISOString().split('T')[0]}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Time Slots */}
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-muted)' }}>Time Slot</label>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
-                                    {timeSlots.map(slot => (
-                                        <button
-                                            key={slot}
-                                            onClick={() => setSelectedTime(slot)}
-                                            style={{
-                                                padding: '10px',
-                                                borderRadius: '8px',
-                                                border: selectedTime === slot ? '2px solid var(--primary)' : '1px solid var(--border)',
-                                                background: selectedTime === slot ? 'rgba(255, 68, 107, 0.2)' : 'rgba(255,255,255,0.05)',
-                                                color: '#fff',
-                                                cursor: 'pointer'
-                                            }}
-                                        >
-                                            {slot}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Submit Button */}
-                            <button
-                                onClick={handleBookLesson}
-                                className="btn btn-primary"
-                                style={{ marginTop: '10px', width: '100%', position: 'relative' }}
-                                disabled={bookingStatus === 'submitting'}
-                            >
-                                {bookingStatus === 'submitting' ? 'Confirming...' : 'Confirm Booking'}
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            {/* REAL Booking Modal with Stripe */}
+            {showBooking && teacher && (
+                <BookingModal
+                    teacher={teacher}
+                    user={user}
+                    onClose={() => setShowBooking(false)}
+                    onBookingSuccess={() => {
+                        setShowBooking(false);
+                        alert('Payment & Booking Confirmed! 🎉 Check your Dashboard.');
+                        navigate('/dashboard');
+                    }}
+                />
             )}
         </div>
     );
