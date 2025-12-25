@@ -18,3 +18,4 @@ This project is connected to Vercel.
 Environment Variables required:
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_ANON_KEY`
+Deploy Trigger V3
