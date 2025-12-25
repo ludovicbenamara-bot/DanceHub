@@ -82,12 +82,7 @@ export default function Login() {
                         {isLogin ? 'Sign Up' : 'Login'}
                     </button>
                 </div>
-                {/* DEBUGGER FOR VERCEL */}
-                <div style={{ marginTop: '20px', padding: '10px', fontSize: '10px', color: 'gray', textAlign: 'center' }}>
-                    <p>Debug Info:</p>
-                    <p>URL: {import.meta.env.VITE_SUPABASE_URL ? import.meta.env.VITE_SUPABASE_URL.substring(0, 15) + '...' : 'MISSING'}</p>
-                    <p>Key: {import.meta.env.VITE_SUPABASE_ANON_KEY ? 'PRESENT' : 'MISSING'}</p>
-                </div>
+
 
             </div>
         </div>
